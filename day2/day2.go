@@ -1,7 +1,6 @@
 package day2
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -68,25 +67,18 @@ func parseGameRGB(game string) [3]int {
 }
 
 func Day2() int {
-	gameConfig := [3]int{12, 13, 14}
-	lines := advent.ReadLines(2, true)
+	lines := advent.ReadLines(2, false)
 	result := 0
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue
 		}
-		gameId := parseGameId(line)
 		gameItems := parseGameRGB(line)
-		isFair := true
-		for i, configValue := range gameConfig {
-			if configValue < gameItems[i] {
-				isFair = false
-			}
+		multiplication := 1
+		for _, gameItem := range gameItems {
+      multiplication = multiplication * gameItem
 		}
-		fmt.Printf("game %v %v -> %v\n", gameId, gameItems, isFair)
-		if isFair {
-			result += gameId
-		}
+    result += multiplication
 	}
 	return result
 }
