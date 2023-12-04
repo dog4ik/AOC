@@ -1,7 +1,6 @@
 package day4
 
 import (
-	"fmt"
 	"log"
 	"slices"
 	"strconv"
@@ -18,7 +17,6 @@ func normalizeNumbers(str string) []string {
 
 func parseCard(card string) (int, []int, []int) {
 	split := strings.Split(card, ":")
-  fmt.Printf("split is:%v\n", split[0])
 	cardName := strings.Split(split[0], " ")
 	cardNumber, err := strconv.Atoi(cardName[len(cardName)-1])
 	if err != nil {
@@ -48,26 +46,42 @@ func parseCard(card string) (int, []int, []int) {
 	return cardNumber, winningNumbers, haveNumbers
 }
 
+func calculatePoints(winningNums []int, haveNums []int) int {
+	points := 0
+	for _, haveNum := range haveNums {
+		if slices.Contains(winningNums, haveNum) {
+			points += 1
+		}
+	}
+	return points
+}
+
 func Day4() int {
 	lines := advent.ReadLines(4, false)
-	result := 0
+	cardsStore := make([]int, len(lines)-1)
+	for i := range cardsStore {
+		cardsStore[i] = 0
+	}
+
 	for _, line := range lines {
 		if len(line) == 0 {
 			continue
 		}
-		points := 0
+
 		cardNumber, winningNums, haveNums := parseCard(line)
-		for _, haveNum := range haveNums {
-			if slices.Contains(winningNums, haveNum) {
-				if points == 0 {
-					points = 1
-				} else {
-					points = points * 2
-				}
+		//add self
+		cardsStore[cardNumber-1] += 1
+		points := calculatePoints(winningNums, haveNums)
+		for j := 0; j < cardsStore[cardNumber-1]; j++ {
+			for i := cardNumber; i < cardNumber+points; i++ {
+				cardsStore[i] += 1
 			}
 		}
-		result += points
-		fmt.Printf("%v: %v | %v\n", cardNumber, winningNums, haveNums)
+	}
+
+	result := 0
+	for _, card := range cardsStore {
+		result += card
 	}
 
 	return result
