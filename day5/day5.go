@@ -1,9 +1,7 @@
 package day5
 
 import (
-	"fmt"
 	"log"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -19,15 +17,15 @@ type Range struct {
 func parseSeeds(line string) []int {
 	seedsPart := strings.Split(line, ": ")[1]
 	seeds := strings.Split(seedsPart, " ")
-	seedsNums := make([]int, len(seeds))
-	for i := range seedsNums {
+	seedsRanges := make([]int, len(seeds))
+	for i := range seedsRanges {
 		number, err := strconv.Atoi(seeds[i])
 		if err != nil {
 			log.Fatalf("failed to parse seeds numbers")
 		}
-		seedsNums[i] = number
+		seedsRanges[i] = number
 	}
-	return seedsNums
+  return seedsRanges
 }
 
 func parseRange(line string) Range {
@@ -51,6 +49,7 @@ func passLayer(r Range, source int) int {
 	return r.dest + source - r.src
 }
 
+// TODO: filter ranges to speed it up
 func Day5() int {
 	// var seedToSoil map[string]int
 	lines := advent.ReadLines(5, false)
@@ -71,19 +70,28 @@ func Day5() int {
 		}
 		ranges[rangeIdx] = append(ranges[rangeIdx], parseRange(line))
 	}
-	for seedIdx := range seeds {
-		for sectorIdx, sector := range ranges {
-			fmt.Printf("new sector: %v\n", sectorIdx)
-			for _, rng := range sector {
-				fmt.Printf("not in range(%v): %v\n", rng, seeds[seedIdx])
-				if inRange(rng, seeds[seedIdx]) {
-					seeds[seedIdx] = passLayer(rng, seeds[seedIdx])
-					fmt.Printf("in range(%v): %v\n", rng, seeds[seedIdx])
-          break
+	minimal := 9999999999999
+
+	for i := 0; i < len(seeds); i += 2 {
+		start := seeds[i]
+		amount := seeds[i+1]
+		for seed := start; seed < start+amount; seed++ {
+      res := seed
+			for _, sector := range ranges {
+				// fmt.Printf("new sector: %v\n", sectorIdx)
+				for _, rng := range sector {
+					// fmt.Printf("not in range(%v): %v\n", rng, res)
+					if inRange(rng, res) {
+						res = passLayer(rng, res)
+						// fmt.Printf("in range(%v): %v\n", rng, res)
+						break
+					}
 				}
 			}
+      if res < minimal {
+        minimal = res
+      }
 		}
 	}
-	fmt.Printf("final seeds: %v\n", seeds)
-	return slices.Min(seeds)
+	return minimal
 }
