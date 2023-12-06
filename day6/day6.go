@@ -2,25 +2,21 @@ package day6
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
 	"github.com/dog4ik/AOC.git/advent"
 )
 
-func parseLine(line string) []int {
+func parseLine(line string) int {
 	results := strings.Split(line, ":")[1]
-	resultsArr := strings.Split(results, " ")
-	var numbers = []int{}
-
-	for _, result := range resultsArr {
-		num, err := strconv.Atoi(result)
-		if err != nil {
-			continue
-		}
-		numbers = append(numbers, num)
+	resultsNumber := strings.ReplaceAll(results, " ", "")
+	num, err := strconv.Atoi(resultsNumber)
+	if err != nil {
+		log.Fatalf("could not parse number (%v)", resultsNumber)
 	}
-	return numbers
+	return num
 }
 
 func calculateWins(time int, distance int) int {
@@ -39,14 +35,12 @@ func calculateWins(time int, distance int) int {
 
 func Day6() int {
 	lines := advent.ReadLines(6, false)
-	times := parseLine(lines[0])
-	distances := parseLine(lines[1])
+	time := parseLine(lines[0])
+	distance := parseLine(lines[1])
 	result := 1
-	fmt.Printf("times: %v\ndistances: %v\n", times, distances)
-	for i := range times {
-		wins := calculateWins(times[i], distances[i])
-		fmt.Printf("game %v got %v wins\n", i, wins)
-		result = result * wins
-	}
+	fmt.Printf("times: %v\ndistances: %v\n", time, distance)
+	wins := calculateWins(time, distance)
+	fmt.Printf("game 0 got %v wins\n", wins)
+	result = result * wins
 	return result
 }
