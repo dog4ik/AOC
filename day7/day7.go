@@ -2,7 +2,6 @@ package day7
 
 import (
 	"cmp"
-	"fmt"
 	"log"
 	"slices"
 	"strconv"
@@ -26,7 +25,7 @@ func parseHand(line string) ([]int, int) {
 			strength[i] = 10
 		}
 		if char == "J" {
-			strength[i] = 11
+			strength[i] = 1
 		}
 		if char == "Q" {
 			strength[i] = 12
@@ -54,6 +53,27 @@ func getHandRank(card []int) int {
 			values[v] += 1
 		}
 	}
+
+	_, haveJocker := values[1]
+
+	if len(values) > 1 && haveJocker {
+		maxVal := 0
+		maxCard := -1
+		for key, value := range values {
+			// joker
+			if key == 1 {
+				continue
+			}
+			if value > maxVal {
+				maxVal = value
+				maxCard = key
+			}
+		}
+		jockerAmount := values[1]
+		delete(values, 1)
+    values[maxCard] += jockerAmount
+	}
+
 	// five of kind
 	if len(values) == 1 {
 		return 7
@@ -134,7 +154,6 @@ func Day7() int {
 		return 0
 	})
 
-	fmt.Printf("sorted hands: %v\n", hands)
 	result := 0
 	for i, hand := range hands {
 		rank := i + 1
