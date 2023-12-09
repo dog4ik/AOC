@@ -1,7 +1,6 @@
 package day9
 
 import (
-	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -41,16 +40,15 @@ func walk(values []int) ([]int, int) {
 			newValues[i] = values[i+1] - values[i]
 		}
 	}
-	fmt.Printf("new numbers:%v\n", newValues)
 	values, reminder := walk(newValues)
-	last := newValues[len(newValues)-1]
+	first := newValues[0]
 
-	return values, last + reminder
+	return values, first - reminder
 }
 
 func calculateValue(values []int) int {
 	_, value := walk(values)
-	return value + values[len(values)-1]
+	return value - values[0]
 }
 
 func Day9() int {
@@ -61,8 +59,7 @@ func Day9() int {
 			continue
 		}
 		numbers := parseRow(line)
-		res += calculateValue(numbers)
-		fmt.Printf("result:%v\n", res)
+		res -= calculateValue(numbers)
 	}
 	return res
 }
